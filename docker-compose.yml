@@ -1,0 +1,70 @@
+version: "3"
+
+services:
+  php1:
+    image: php:7.4-fpm
+    container_name: first-php
+    depends_on:
+      - database
+    build:
+      context: .
+      dockerfile: ./laravel1/php/Dockerfile
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./laravel1:/var/www/html
+    # command: composer install && npm run build && php artisan key:generate && php artisan migrate:fresh --seed
+  php2:
+    image: php:7.4-fpm
+    container_name: second-php
+    depends_on:
+      - database
+    build:
+      context: .
+      dockerfile: ./laravel2/php/Dockerfile
+    ports:
+      - "9001:9000"
+    volumes:
+      - ./laravel2:/var/www/html
+    # command: composer install && npm run build && php artisan key:generate && php artisan migrate:fresh --seed
+  nginx1:
+    image: nginx:latest
+    container_name: first-nginx
+    ports:
+      - "8081:80"
+    volumes:
+      - ./laravel1/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./laravel1/public:/var/www/html/public
+      - ./laravel1/storage/logs:/var/log/nginx
+    volumes_from:
+      - php1
+    depends_on: 
+    - php1
+  nginx2:
+    image: nginx:latest
+    container_name: second-nginx
+    ports:
+      - "8082:80"
+    volumes:
+      - ./laravel2/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./laravel2/public:/var/www/html/public
+      - ./laravel2/storage/logs:/var/log/nginx
+    volumes_from:
+      - php2
+    depends_on: 
+    - php2
+  database:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_PASSWORD: 'ChangeMe'
+      MY_SQL_DATABASE: 'database'
+      MYSQL_USER: 'user'
+
+volumes:
+  dbdata: {}
