@@ -1,4 +1,4 @@
-#DOCKER-COMPOSE
+# DOCKER-COMPOSE
 
 Ce fichier docker-compose.yml définit une application qui utilise plusieurs conteneurs Docker pour exécuter plusieurs instances de PHP (php1 et php2) et de nginx (nginx1 et nginx2) ainsi qu'une base de données MySQL (database). Il utilise également des volumes pour les données de la base de données et des fichiers de configuration pour les conteneurs nginx.
 
